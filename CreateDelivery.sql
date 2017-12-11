@@ -59,9 +59,17 @@ CREATE TABLE Drones (
     FOREIGN KEY (DroneStatusKey) REFERENCES DroneStatus(DroneStatusID)
 );
 
+CREATE TABLE DroneDirtyBit (
+	ID int NOT NULL auto_increment,
+    DroneKey int NOT NULL,
+    DirtyBit int NOT NULL,
+    PRIMARY KEY (ID),
+    FOREIGN KEY (DroneKey) REFERENCES Drones(DroneID)
+);
 
 INSERT INTO status(StatusDesc) values('Initial');
 INSERT INTO status(StatusDesc) values('Route Ready');
+INSERT INTO status(StatusDesc) values('Loading');
 INSERT INTO status(StatusDesc) values('En Route');
 INSERT INTO status(StatusDesc) values('Complete');
 INSERT INTO status(StatusDesc) values('Failed');
@@ -70,7 +78,7 @@ INSERT INTO status(StatusDesc) values('Archived');
 INSERT INTO DroneStatus(StatusDesc) values('Charging');
 INSERT INTO DroneStatus(StatusDesc) values('Waiting');
 INSERT INTO DroneStatus(StatusDesc) values('Loading');
-INSERT INTO status(StatusDesc) values('En Route');
+INSERT INTO DroneStatus(StatusDesc) values('En Route');
 INSERT INTO DroneStatus(StatusDesc) values('Delivering');
 INSERT INTO DroneStatus(StatusDesc) values('Returning');
 INSERT INTO DroneStatus(StatusDesc) values('Crashed');
