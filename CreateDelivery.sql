@@ -40,7 +40,7 @@ CREATE TABLE Routes (
 
 CREATE TABLE RoutePosition (
     RoutesKey int NOT NULL,
-    PositionNum int,
+    PositionNum int NOT NULL,
     x int NOT NULL,
     y int NOT NULL,
     z int NOT NULL,
@@ -56,7 +56,8 @@ CREATE TABLE Drones (
     PRIMARY KEY (DroneID),
     FOREIGN KEY (OrderKey) REFERENCES Orders(OrderID),
     FOREIGN KEY (RoutesKey) REFERENCES RoutePosition(RoutesKey),
-    FOREIGN KEY (DroneStatusKey) REFERENCES DroneStatus(DroneStatusID)
+    FOREIGN KEY (DroneStatusKey) REFERENCES DroneStatus(DroneStatusID),
+    Index(DroneStatusKey)
 );
 
 CREATE TABLE DroneDirtyBit (
@@ -64,8 +65,31 @@ CREATE TABLE DroneDirtyBit (
     DroneKey int NOT NULL,
     DirtyBit int NOT NULL,
     PRIMARY KEY (ID),
-    FOREIGN KEY (DroneKey) REFERENCES Drones(DroneID)
+    FOREIGN KEY (DroneKey) REFERENCES Drones(DroneID),
+    Index(DirtyBit)
 );
+
+delimiter //
+CREATE TRIGGER bitCheck BEFORE insert ON DroneDirtyBit
+FOR EACH ROW
+BEGIN
+	IF NEW.DirtyBit < 0 THEN
+		SET DirtyBit = 0;
+	ELSEIF NEW.DirtyBit > 1 THEN
+		SET DirtyBit = 1;
+	END IF;
+END;
+
+CREATE TRIGGER bitCheck BEFORE update ON DroneDirtyBit
+FOR EACH ROW
+BEGIN
+	IF NEW.DirtyBit < 0 THEN
+		SET DirtyBit = 0;
+	ELSEIF NEW.DirtyBit > 1 THEN
+		SET DirtyBit = 1;
+	END IF;
+END;
+delimiter ;
 
 INSERT INTO status(StatusDesc) values('Initial');
 INSERT INTO status(StatusDesc) values('Route Ready');
